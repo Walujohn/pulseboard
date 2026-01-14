@@ -1,24 +1,28 @@
-# README
+# PulseBoard
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+A small Rails 8 warmup application built to practice:
 
-Things you may want to cover:
+- TDD API development using Minitest
+- RESTful JSON APIs
+- Hotwire (Turbo Frames & Turbo Streams)
+- Stimulus controllers (React → Hotwire migration style)
+- PostgreSQL with ActiveRecord
 
-* Ruby version
+## Features
+- Create, list, update, delete status updates
+- JSON API under `/api/v1/status_updates`
+- Hotwire-powered UI (no page reloads)
+- Stimulus-powered “Like” button
 
-* System dependencies
+## Tech Stack
+- Ruby 3.4
+- Rails 8
+- PostgreSQL
+- Minitest
+- Hotwire (Turbo + Stimulus)
 
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+## Setup
+```bash
+bundle install
+rails db:prepare
+rails server
