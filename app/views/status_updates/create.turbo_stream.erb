@@ -1,0 +1,2 @@
+<%= turbo_stream.prepend "status_updates", partial: "status_update", locals: { status_update: @status_update } %>
+<%= turbo_stream.replace "new_status_update", partial: "form", locals: { status_update: StatusUpdate.new } %>

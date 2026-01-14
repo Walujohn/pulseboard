@@ -1,0 +1,21 @@
+<%= form_with model: status_update do |f| %>
+  <% if status_update.errors.any? %>
+    <ul>
+      <% status_update.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <div>
+    <%= f.label :mood %>
+    <%= f.select :mood, ["focused", "calm", "happy", "blocked"], include_blank: true %>
+  </div>
+
+  <div>
+    <%= f.label :body %>
+    <%= f.text_area :body, rows: 3 %>
+  </div>
+
+  <%= f.submit "Post update" %>
+<% end %>

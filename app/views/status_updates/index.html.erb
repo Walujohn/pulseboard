@@ -1,0 +1,9 @@
+<h1>PulseBoard</h1>
+
+<%= turbo_frame_tag "new_status_update" do %>
+    <%= render "form", status_update: @status_update %>
+<% end %>
+
+<%= turbo_frame_tag "status_updates" do %>
+    <%= render @status_updates %>
+<% end %>

@@ -6,10 +6,6 @@ class StatusUpdatesApiTest < ActionDispatch::IntegrationTest
   end
 
   test "GET /api/v1/status_updates returns list" do
-    setup do
-        StatusUpdate.delete_all
-    end
-
     StatusUpdate.create!(body: "First", mood: "focused")
     StatusUpdate.create!(body: "Second", mood: "calm")
 

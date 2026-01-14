@@ -1,0 +1,16 @@
+<%= turbo_frame_tag dom_id(status_update) do %>
+  <div style="border:1px solid #ccc; padding:10px; margin:10px 0;">
+    <strong><%= status_update.mood %></strong>
+    <p><%= status_update.body %></p>
+
+    <div data-controller="likes" data-likes-id-value="<%= status_update.id %>">
+      <button data-action="likes#like">👍 Like</button>
+      <span data-likes-target="count"><%= status_update.likes_count %></span>
+    </div>
+
+    <%= link_to "Edit", edit_status_update_path(status_update) %> |
+    <%= button_to "Delete", status_update_path(status_update),
+          method: :delete,
+          form: { data: { turbo_confirm: "Delete?" } } %>
+  </div>
+<% end %>
