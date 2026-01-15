@@ -1,0 +1,81 @@
+<!-- 
+  HOTWIRE EXAMPLE: Reactions Display Partial
+  
+  This is the server-rendered HTML that Stimulus enhances.
+  Notice: all the data and logic is in the HTML and Rails controller.
+  The Stimulus controller just adds interactivity without managing state.
+-->
+
+<div class="reactions-picker" 
+     data-controller="reactions"
+     data-reactions-status-update-id-value="<%= status_update.id %>"
+     data-reactions-user-id-value="<%= session_user_id %>">
+  
+  <!-- Reactions Display Section -->
+  <div class="reactions-picker__display" data-reactions-target="reactionsDisplay">
+    <% reaction_summary = status_update.reaction_summary %>
+    
+    <% if reaction_summary.any? %>
+      <div class="reactions-grid">
+        <% reaction_summary.each do |emoji, count| %>
+          <button class="reaction-button" 
+                  data-action="reactions#toggleReaction"
+                  data-emoji="<%= emoji %>"
+                  title="<%= "You and others reacted" %>">
+            <span class="reaction-emoji"><%= emoji %></span>
+            <span class="reaction-count"><%= count %></span>
+          </button>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="reactions-picker__empty">No reactions yet</p>
+    <% end %>
+  </div>
+
+  <!-- Add Reaction Options -->
+  <div class="reactions-picker__options">
+    <p class="reactions-picker__label">Add reaction:</p>
+    <div class="emoji-options">
+      <% Reaction::EMOJIS.each do |emoji| %>
+        <button class="emoji-option" 
+                data-action="reactions#toggleReaction"
+                data-emoji="<%= emoji %>"
+                type="button">
+          <%= emoji %>
+        </button>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<!-- 
+  HOW THIS WORKS:
+  
+  1. Server renders the current reactions from database
+  2. Stimulus controller is attached via data-controller="reactions"
+  3. User clicks emoji button
+  4. data-action="reactions#toggleReaction" triggers the Stimulus method
+  5. toggleReaction() sends POST request to Rails API
+  6. refreshReactions() fetches updated reactions from server
+  7. updateReactionsDisplay() updates the DOM with new data
+  
+  STATE FLOW:
+  User Click
+    ↓
+  Stimulus Controller
+    ↓
+  Rails API (POST)
+    ↓
+  Database Update
+    ↓
+  fetch GET reactions
+    ↓
+  DOM Update
+  
+  KEY DIFFERENCES FROM REACT VERSION:
+  - No useState, no useEffect
+  - State lives in database/server
+  - HTML is rendered server-side
+  - Stimulus just adds event handlers
+  - Much simpler, less JavaScript
+-->

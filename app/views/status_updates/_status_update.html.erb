@@ -1,16 +1,48 @@
 <%= turbo_frame_tag dom_id(status_update) do %>
-  <div style="border:1px solid #ccc; padding:10px; margin:10px 0;">
-    <strong><%= status_update.mood %></strong>
-    <p><%= status_update.body %></p>
+  <div class="status-update">
+    <strong class="status-update__mood"><%= mood_label(status_update.mood) %></strong>
+    <p class="status-update__body"><%= status_update.body %></p>
 
-    <div data-controller="likes" data-likes-id-value="<%= status_update.id %>">
-      <button data-action="likes#like">👍 Like</button>
-      <span data-likes-target="count"><%= status_update.likes_count %></span>
+    <div class="likes" data-controller="likes" data-likes-id-value="<%= status_update.id %>">
+      <button class="likes__button" data-action="likes#like">👍</button>
+      <span class="likes__count" data-likes-target="count"><%= status_update.likes_count %></span>
     </div>
 
-    <%= link_to "Edit", edit_status_update_path(status_update) %> |
-    <%= button_to "Delete", status_update_path(status_update),
-          method: :delete,
-          form: { data: { turbo_confirm: "Delete?" } } %>
+    <div class="status-update__actions">
+      <%= link_to "Edit", edit_status_update_path(status_update), class: "btn btn--link" %>
+      <%= button_to "Delete", status_update_path(status_update),
+            method: :delete,
+            form: { data: { turbo_confirm: "Delete?" } },
+            class: "btn btn--link" %>
+    </div>
+  </div>
+
+  <!-- Comments Section -->
+  <div class="comments-section">
+    <h3 class="comments-section__title">Comments</h3>
+
+    <!-- Comments Form -->
+    <%= render "comments/form", status_update: status_update, comment: Comment.new %>
+
+    <!-- Comments List -->
+    <%= turbo_frame_tag dom_id(status_update, :comments) do %>
+      <div id="<%= dom_id(status_update, :comments_list) %>">
+        <% status_update.comments.recent.each do |comment| %>
+          <%= render "comments/comment", comment: comment %>
+        <% end %>
+      </div>
+    <% end %>
   </div>
 <% end %>
+
+<%# On the StatusUpdates page:
+
+Each status update has a Comments section
+
+Submitting a comment:
+
+prepends the new comment into the list
+
+resets the form
+
+shows validation errors inline (no page refresh) %>

@@ -10,9 +10,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_12_102522) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_14_224954) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "comments", force: :cascade do |t|
+    t.text "body"
+    t.datetime "created_at", null: false
+    t.bigint "status_update_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["status_update_id"], name: "index_comments_on_status_update_id"
+  end
+
+  create_table "reactions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "emoji"
+    t.bigint "status_update_id", null: false
+    t.datetime "updated_at", null: false
+    t.string "user_identifier"
+    t.index ["status_update_id"], name: "index_reactions_on_status_update_id"
+  end
 
   create_table "status_updates", force: :cascade do |t|
     t.text "body"
@@ -21,4 +38,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_12_102522) do
     t.string "mood"
     t.datetime "updated_at", null: false
   end
+
+  add_foreign_key "comments", "status_updates"
+  add_foreign_key "reactions", "status_updates"
 end

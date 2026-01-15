@@ -1,0 +1,17 @@
+<%= turbo_frame_tag dom_id(comment) do %>
+  <div class="comment">
+    <div class="comment__header">
+      <strong class="comment__label">Comment</strong>
+      <span class="comment__timestamp">
+        <%= time_ago_in_words(comment.created_at) %> ago
+      </span>
+    </div>
+    <p class="comment__body"><%= comment.body %></p>
+    <div class="comment__actions">
+      <%= button_to "Delete", status_update_comment_path(comment.status_update, comment),
+            method: :delete,
+            form: { data: { turbo_confirm: "Delete this comment?" } },
+            class: "btn btn--danger" %>
+    </div>
+  </div>
+<% end %>

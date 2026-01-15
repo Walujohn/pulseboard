@@ -1,21 +1,24 @@
-<%= form_with model: status_update do |f| %>
+<%= form_with model: status_update, local: true, data: { turbo: true }, id: "#{dom_id(status_update)}_form" do |f| %>
   <% if status_update.errors.any? %>
-    <ul>
-      <% status_update.errors.full_messages.each do |msg| %>
-        <li><%= msg %></li>
-      <% end %>
-    </ul>
+    <div class="form-errors">
+      <h4><%= pluralize(status_update.errors.count, "error") %> prohibited this status update:</h4>
+      <ul>
+        <% status_update.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
   <% end %>
 
-  <div>
-    <%= f.label :mood %>
-    <%= f.select :mood, ["focused", "calm", "happy", "blocked"], include_blank: true %>
+  <div class="form-field">
+    <%= f.label :mood, class: "form-field__label" %>
+    <%= f.select :mood, StatusUpdate::MOODS, { include_blank: "Select a mood..." }, class: "form-field__select" %>
   </div>
 
-  <div>
-    <%= f.label :body %>
-    <%= f.text_area :body, rows: 3 %>
+  <div class="form-field">
+    <%= f.label :body, class: "form-field__label" %>
+    <%= f.text_area :body, rows: 3, placeholder: "What's on your mind?", class: "form-field__textarea" %>
   </div>
 
-  <%= f.submit "Post update" %>
+  <%= f.submit "Post update", class: "btn btn--primary" %>
 <% end %>

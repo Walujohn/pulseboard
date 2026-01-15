@@ -1,0 +1,18 @@
+<%= form_with model: [status_update, comment], local: true, data: { turbo: true }, id: "#{dom_id(status_update)}_comment_form" do |form| %>
+  <div class="form-field">
+    <%= form.label :body, "Add a comment:", class: "form-field__label" %>
+    <%= form.text_area :body, 
+        rows: 3, 
+        placeholder: "What do you think?",
+        class: "form-field__textarea" %>
+    <% if form.object.errors[:body].present? %>
+      <div class="form-field__error">
+        <%= form.object.errors[:body].join(", ") %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="form-actions">
+    <%= form.submit "Post Comment", class: "btn btn--primary" %>
+  </div>
+<% end %>

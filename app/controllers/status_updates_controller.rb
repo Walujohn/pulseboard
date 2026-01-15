@@ -1,7 +1,9 @@
 class StatusUpdatesController < ApplicationController
+  before_action :set_status_update, only: [ :edit, :update, :destroy, :like ]
+
   def index
     @status_update = StatusUpdate.new
-    @status_updates = StatusUpdate.order(created_at: :desc)
+    @status_updates = StatusUpdate.recent
   end
 
   def create
@@ -13,18 +15,15 @@ class StatusUpdatesController < ApplicationController
         format.html { redirect_to root_path }
       end
     else
-      @status_updates = StatusUpdate.order(created_at: :desc)
+      @status_updates = StatusUpdate.recent
       render :index, status: :unprocessable_entity
     end
   end
 
   def edit
-    @status_update = StatusUpdate.find(params[:id])
   end
 
   def update
-    @status_update = StatusUpdate.find(params[:id])
-
     if @status_update.update(status_update_params)
       respond_to do |format|
         format.turbo_stream
@@ -36,7 +35,6 @@ class StatusUpdatesController < ApplicationController
   end
 
   def destroy
-    @status_update = StatusUpdate.find(params[:id])
     @status_update.destroy
 
     respond_to do |format|
@@ -45,17 +43,18 @@ class StatusUpdatesController < ApplicationController
     end
   end
 
-  # Stimulus endpoint (React-style "like button" → Hotwire)
   def like
-    update = StatusUpdate.find(params[:id])
-    update.increment!(:likes_count)
-    render json: { likes_count: update.likes_count }, status: :ok
+    @status_update.increment_likes
+    render json: { likes_count: @status_update.likes_count }, status: :ok
   end
 
   private
+
+  def set_status_update
+    @status_update = StatusUpdate.find(params[:id])
+  end
 
   def status_update_params
     params.require(:status_update).permit(:body, :mood)
   end
 end
-
