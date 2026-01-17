@@ -1,4 +1,129 @@
-<%= turbo_frame_tag dom_id(@status_update) do %>
-  <h2>Edit</h2>
-  <%= render "form", status_update: @status_update %>
-<% end %>
+<div class="edit-status-update">
+  <div class="edit-header">
+    <h2>Edit Status Update</h2>
+    <%= link_to "← Cancel", status_update_path(@status_update), class: "btn btn-secondary" %>
+  </div>
+
+  <%= form_with model: @status_update, local: true, data: { turbo: true } do |f| %>
+    <% if @status_update.errors.any? %>
+      <div class="form-errors">
+        <h4><%= pluralize(@status_update.errors.count, "error") %> prohibited this status update:</h4>
+        <ul>
+          <% @status_update.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="form-field">
+      <%= f.label :body, "Update message", class: "form-field__label" %>
+      <%= f.text_area :body, rows: 4, placeholder: "What's on your mind?", class: "form-field__textarea" %>
+      <small>Max 280 characters</small>
+    </div>
+
+    <div class="form-field">
+      <%= f.label :mood, "Current mood", class: "form-field__label" %>
+      <%= f.select :mood, StatusUpdate::MOODS, { include_blank: "Select a mood..." }, class: "form-field__select" %>
+    </div>
+
+    <div class="form-actions">
+      <%= f.submit "Save changes", class: "btn btn-primary" %>
+      <%= link_to "Delete", status_update_path(@status_update), method: :delete, 
+          data: { confirm: "Are you sure?" }, class: "btn btn-danger" %>
+    </div>
+  <% end %>
+</div>
+
+<style>
+  .edit-status-update {
+    max-width: 600px;
+    margin: 2rem auto;
+  }
+
+  .edit-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  .edit-header h2 {
+    margin: 0;
+  }
+
+  .form-field {
+    margin-bottom: 1.5rem;
+  }
+
+  .form-field__label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+  }
+
+  .form-field__textarea,
+  .form-field__select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+  }
+
+  .form-field small {
+    display: block;
+    margin-top: 0.25rem;
+    color: #666;
+  }
+
+  .form-errors {
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .btn {
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    font-size: 1rem;
+  }
+
+  .btn-primary {
+    background: #007bff;
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background: #0056b3;
+  }
+
+  .btn-secondary {
+    background: #6c757d;
+    color: white;
+  }
+
+  .btn-secondary:hover {
+    background: #545b62;
+  }
+
+  .btn-danger {
+    background: #dc3545;
+    color: white;
+  }
+
+  .btn-danger:hover {
+    background: #c82333;
+  }
+</style>

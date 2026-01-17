@@ -1,1 +1,61 @@
-<%= turbo_stream.replace dom_id(@status_update), partial: "status_update", locals: { status_update: @status_update } %>
+<!--
+  Turbo Stream Response: When status update is modified
+  
+  This file sends HTML over the wire to update the page WITHOUT a full page reload.
+  
+  How it works:
+  1. User submits form
+  2. Rails processes update
+  3. Rails renders this file (not HTML, but Turbo Stream XML)
+  4. Browser receives: <turbo-stream action="replace" target="timeline">...</turbo-stream>
+  5. Turbo library finds div#timeline and replaces it with new HTML
+  6. Page updates seamlessly
+  
+  Key pattern: <turbo-stream action="replace" target="ELEMENT_ID">
+  - action: What to do (replace, append, prepend, remove)
+  - target: CSS id of element to update
+  - Template: New HTML to put there
+-->
+
+<!-- Update the timeline section (the main feature) -->
+<turbo-stream action="replace" target="timeline">
+  <template>
+    <%= render 'timeline', status_update: @status_update, changes: @changes %>
+  </template>
+</turbo-stream>
+
+<!-- Also update the card header in case body/mood changed -->
+<turbo-stream action="replace" target="status-update-card">
+  <template>
+    <div id="status-update-card" class="status-update-card">
+      <div class="card-header">
+        <h2><%= @status_update.body %></h2>
+        <span class="mood-badge"><%= @status_update.mood.humanize %></span>
+      </div>
+
+      <div class="card-body">
+        <p class="meta">
+          Posted on <%= @status_update.created_at.strftime("%B %d, %Y at %I:%M %p") %>
+        </p>
+        <p class="likes-count">
+          👍 <%= @status_update.likes_count %> likes
+        </p>
+
+        <div class="reactions-section">
+          <h4>Reactions</h4>
+          <% if @status_update.reaction_summary.empty? %>
+            <p class="empty-state">No reactions yet.</p>
+          <% else %>
+            <div class="reactions">
+              <% @status_update.reaction_summary.each do |emoji, count| %>
+                <span class="reaction-chip">
+                  <%= emoji %> <span class="count"><%= count %></span>
+                </span>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </template>
+</turbo-stream>

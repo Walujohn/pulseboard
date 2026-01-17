@@ -100,7 +100,7 @@ RSpec.describe 'Reactions API', type: :request do
 
       expect(response).to have_http_status(:ok)
       expect(Reaction.exists?(reaction.id)).to be false
-      expect(response.parsed_body['success']).to eq(true)
+      expect(response.parsed_body['data']['success']).to eq(true)
     end
 
     it 'returns 404 for non-existent reaction' do

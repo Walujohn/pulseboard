@@ -1,0 +1,85 @@
+<!-- 
+  Timeline Partial: app/views/status_updates/_timeline.html.erb
+  
+  Purpose: Display status change timeline for a status update
+  
+  Usage in view:
+    <%= render 'timeline', status_update: @status_update, changes: @changes %>
+  
+  Data Structure:
+    @status_update - The StatusUpdate record
+    @changes - Array of StatusChange records, ordered chronologically
+-->
+
+<div id="timeline" class="timeline-container">
+  <h3>Status Timeline</h3>
+  
+  <% if changes.empty? %>
+    <p class="empty-state">No status changes yet.</p>
+  <% else %>
+    <div class="timeline">
+      <% changes.each_with_index do |change, index| %>
+        <!-- Stimulus Controller: Allows expand/collapse of timeline items -->
+        <div class="timeline-item" 
+             data-controller="timeline-item"
+             data-change-id="<%= change.id %>">
+          <!-- Arrow between items (not for last item) -->
+          <% if index < changes.length - 1 %>
+            <div class="timeline-arrow">↓</div>
+          <% end %>
+
+          <!-- CLICKABLE SUMMARY (Stimulus trigger) -->
+          <div class="summary" 
+               data-action="click->timeline-item#toggle"
+               data-timeline-item-target="summary">
+            <div class="summary-content">
+              <strong><%= change.from_status.humanize.titleize %></strong>
+              <span class="transition-arrow">→</span>
+              <strong><%= change.to_status.humanize.titleize %></strong>
+              <span class="expand-indicator">→</span>
+            </div>
+          </div>
+
+          <!-- EXPANDABLE DETAILS (Hidden by default, shown on click) -->
+          <div class="details" 
+               data-timeline-item-target="details"
+               style="display: none;">
+            <!-- The status change event -->
+            <div class="timeline-event">
+              <!-- Show "from" status if this isn't the first change -->
+              <% if change.from_status.present? %>
+                <div class="from-status">
+                  <span class="status-badge from">📍</span>
+                  <%= change.from_status.humanize.titleize %>
+                </div>
+              <% end %>
+
+              <!-- Arrow between statuses -->
+              <div class="status-arrow">→</div>
+
+              <!-- Show "to" status -->
+              <div class="to-status">
+                <span class="status-badge to">✓</span>
+                <%= change.to_status.humanize.titleize %>
+              </div>
+
+              <!-- Timestamp of the change -->
+              <div class="timestamp">
+                <time datetime="<%= change.created_at.iso8601 %>">
+                  <%= change.created_at.strftime("%b %d, %Y at %I:%M %p") %>
+                </time>
+              </div>
+
+              <!-- Reason for change (optional) -->
+              <% if change.reason.present? %>
+                <div class="reason">
+                  <em>"<%= change.reason %>"</em>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>

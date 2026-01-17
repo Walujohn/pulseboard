@@ -1,9 +1,13 @@
 class StatusUpdatesController < ApplicationController
-  before_action :set_status_update, only: [ :edit, :update, :destroy, :like ]
+  before_action :set_status_update, only: [ :show, :edit, :update, :destroy, :like ]
 
   def index
     @status_update = StatusUpdate.new
     @status_updates = StatusUpdate.recent
+  end
+
+  def show
+    @changes = @status_update.status_changes.ordered
   end
 
   def create
@@ -25,6 +29,7 @@ class StatusUpdatesController < ApplicationController
 
   def update
     if @status_update.update(status_update_params)
+      @changes = @status_update.status_changes.ordered
       respond_to do |format|
         format.turbo_stream
         format.html { redirect_to root_path }

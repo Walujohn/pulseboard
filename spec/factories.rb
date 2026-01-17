@@ -15,4 +15,11 @@ FactoryBot.define do
     emoji { Reaction::EMOJIS.sample }
     user_identifier { "user_#{SecureRandom.random_bytes(4).unpack1('H*')}" }
   end
+
+  factory :status_change do
+    association :status_update
+    from_status { nil }
+    to_status { StatusUpdate::STATUSES.sample }
+    reason { nil }
+  end
 end

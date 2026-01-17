@@ -1,0 +1,171 @@
+<!-- app/views/status_updates/show.html.erb -->
+
+<div class="status-update-detail">
+  <!-- Header with back link -->
+  <div class="detail-header">
+    <%= link_to "← Back to updates", root_path, class: "btn btn-secondary" %>
+  </div>
+
+  <!-- The main status update (with ID for Turbo Stream replacement) -->
+  <div id="status-update-card" class="status-update-card">
+    <div class="card-header">
+      <h2><%= @status_update.body %></h2>
+      <span class="mood-badge"><%= @status_update.mood.humanize %></span>
+    </div>
+
+    <div class="card-body">
+      <p class="meta">
+        Posted on <%= @status_update.created_at.strftime("%B %d, %Y at %I:%M %p") %>
+      </p>
+      <p class="likes-count">
+        👍 <%= @status_update.likes_count %> likes
+      </p>
+
+      <!-- Reactions section -->
+      <div class="reactions-section">
+        <h4>Reactions</h4>
+        <% if @status_update.reaction_summary.empty? %>
+          <p class="empty-state">No reactions yet.</p>
+        <% else %>
+          <div class="reactions">
+            <% @status_update.reaction_summary.each do |emoji, count| %>
+              <span class="reaction-chip">
+                <%= emoji %> <span class="count"><%= count %></span>
+              </span>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- TIMELINE SECTION: The important part! -->
+  <!-- This partial renders the timeline of all status changes -->
+  <!-- When update.turbo_stream.erb replaces this div, the timeline updates -->
+  <%= render 'timeline', status_update: @status_update, changes: @changes %>
+
+  <!-- Edit button (for demo purposes) -->
+  <div class="actions">
+    <%= button_to "Change Status", edit_status_update_path(@status_update), method: :get, class: "btn btn-primary" %>
+  </div>
+</div>
+
+<style>
+  .status-update-detail {
+    max-width: 600px;
+    margin: 2rem auto;
+  }
+
+  .detail-header {
+    margin-bottom: 1rem;
+  }
+
+  .status-update-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  .card-header {
+    background: #f5f5f5;
+    padding: 1.5rem;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+  }
+
+  .card-header h2 {
+    margin: 0;
+    flex: 1;
+    font-size: 1.5rem;
+  }
+
+  .mood-badge {
+    display: inline-block;
+    background: #007bff;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+
+  .card-body {
+    padding: 1.5rem;
+  }
+
+  .meta {
+    color: #666;
+    font-size: 0.9rem;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .likes-count {
+    font-weight: bold;
+    margin: 0.5rem 0;
+  }
+
+  .reactions-section h4 {
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .reactions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .reaction-chip {
+    background: #f0f0f0;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+  }
+
+  .count {
+    color: #666;
+    margin-left: 0.25rem;
+  }
+
+  .empty-state {
+    color: #999;
+    font-style: italic;
+    margin: 0;
+  }
+
+  .actions {
+    margin-top: 2rem;
+    text-align: center;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    font-size: 1rem;
+  }
+
+  .btn-primary {
+    background: #007bff;
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background: #0056b3;
+  }
+
+  .btn-secondary {
+    background: #6c757d;
+    color: white;
+  }
+
+  .btn-secondary:hover {
+    background: #545b62;
+  }
+</style>

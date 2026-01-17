@@ -1,6 +1,8 @@
 module Api
   module V1
     class ReactionsController < ActionController::API
+      include JsonResponses
+
       before_action :set_status_update
       before_action :set_reaction, only: [ :destroy ]
 
@@ -9,15 +11,15 @@ module Api
       def index
         reactions_summary = @status_update.reactions.group(:emoji).count
 
-        render json: {
-          data: reactions_summary.map { |emoji, count|
-            {
-              emoji: emoji,
-              count: count,
-              users: @status_update.reactions.where(emoji: emoji).pluck(:user_identifier)
-            }
+        data = reactions_summary.map { |emoji, count|
+          {
+            emoji: emoji,
+            count: count,
+            users: @status_update.reactions.where(emoji: emoji).pluck(:user_identifier)
           }
-        }, status: :ok
+        }
+
+        render_data(data, :ok)
       end
 
       # POST /api/v1/status_updates/:status_update_id/reactions
@@ -31,20 +33,15 @@ module Api
         if existing
           # Toggle: if reaction exists, delete it
           existing.destroy
-          render json: { data: { toggled: false } }, status: :ok
+          render_data({ toggled: false }, :ok)
         else
           # Create new reaction
           @reaction = @status_update.reactions.new(reaction_params)
 
           if @reaction.save
-            render json: { data: ::ReactionSerializer.new(@reaction).as_json }, status: :created
+            render_data(serialize_one(@reaction), :created)
           else
-            render json: {
-              error: {
-                code: "validation_error",
-                messages: @reaction.errors.full_messages
-              }
-            }, status: :unprocessable_entity
+            render_validation_errors(@reaction, :unprocessable_entity)
           end
         end
       end
@@ -52,7 +49,7 @@ module Api
       # DELETE /api/v1/status_updates/:status_update_id/reactions/:id
       def destroy
         @reaction.destroy
-        render json: { success: true }, status: :ok
+        render_data({ success: true }, :ok)
       end
 
       private
@@ -60,13 +57,13 @@ module Api
       def set_status_update
         @status_update = StatusUpdate.find(params[:status_update_id])
       rescue ActiveRecord::RecordNotFound
-        render json: { error: "Status update not found" }, status: :not_found
+        render_error("not_found", "Status update not found", :not_found)
       end
 
       def set_reaction
         @reaction = @status_update.reactions.find(params[:id])
       rescue ActiveRecord::RecordNotFound
-        render json: { error: "Reaction not found" }, status: :not_found
+        render_error("not_found", "Reaction not found", :not_found)
       end
 
       def reaction_params
