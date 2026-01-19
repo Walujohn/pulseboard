@@ -63,7 +63,7 @@ module Api
 
       def apply_filters(scope)
         scope = scope.where("body ILIKE ?", "%#{sanitize_like(params[:q])}%") if params[:q].present?
-        scope = scope.where(mood: params[:mood]) if params[:mood].present?
+        scope = scope.where(mood: params[:mood]) if params[:mood].present? && StatusUpdate.moods.key?(params[:mood])
         scope = scope.where("created_at >= ?", Time.iso8601(params[:since])) if params[:since].present?
         scope
       rescue ArgumentError

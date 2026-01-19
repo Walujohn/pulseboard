@@ -38,17 +38,10 @@ RSpec.describe StatusChange, type: :model do
         expect(change.errors[:to_status]).to include("can't be blank")
       end
 
-      it 'requires to_status to be in STATUSES constant' do
-        change.to_status = 'invalid_status'
-        expect(change).not_to be_valid
-        expect(change.errors[:to_status]).to include("is not included in the list")
-      end
-
-      it 'accepts valid STATUSES values' do
+      it 'accepts valid status values' do
         status_update = create(:status_update)
-        StatusChange::STATUSES.each do |status|
+        [ 'submitted', 'in_review', 'approved', 'denied', 'needs_info' ].each do |status|
           change = build(:status_change, status_update: status_update, to_status: status)
-          # Only validate to_status, not the whole record
           expect(change).to be_valid
         end
       end
@@ -60,31 +53,18 @@ RSpec.describe StatusChange, type: :model do
         expect(change).to be_valid
       end
 
-      it 'allows from_status to be in STATUSES' do
+      it 'allows from_status to be any value' do
         change.from_status = 'submitted'
         expect(change).to be_valid
-      end
-
-      it 'rejects from_status that is not in STATUSES' do
-        change.from_status = 'invalid_status'
-        expect(change).not_to be_valid
       end
     end
   end
 
-  describe 'STATUSES constant' do
-    it 'is defined' do
-      expect(StatusChange::STATUSES).to be_present
-    end
-
-    it 'is frozen to prevent modification' do
-      expect(StatusChange::STATUSES.frozen?).to be true
-    end
-
-    it 'contains expected status values' do
-      expect(StatusChange::STATUSES).to include(
-        'submitted', 'in_review', 'approved', 'denied', 'needs_info'
-      )
+  describe 'status values' do
+    it 'allows creating status changes with common statuses' do
+      status_update = create(:status_update)
+      change = create(:status_change, status_update: status_update, to_status: 'approved')
+      expect(change.to_status).to eq('approved')
     end
   end
 

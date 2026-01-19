@@ -5,7 +5,6 @@ RSpec.describe StatusUpdate, type: :model do
     it { should validate_presence_of(:body) }
     it { should validate_length_of(:body).is_at_most(280) }
     it { should validate_presence_of(:mood) }
-    it { should validate_inclusion_of(:mood).in_array(StatusUpdate::MOODS) }
   end
 
   describe 'associations' do
@@ -40,13 +39,20 @@ RSpec.describe StatusUpdate, type: :model do
     end
   end
 
-  describe 'MOODS constant' do
-    it 'contains expected mood values' do
-      expect(StatusUpdate::MOODS).to include('focused', 'calm', 'happy', 'blocked')
+  describe 'mood enum' do
+    it 'has all expected moods' do
+      expect(StatusUpdate.moods.keys).to include('focused', 'calm', 'happy', 'blocked')
     end
 
-    it 'is frozen to prevent modification' do
-      expect(StatusUpdate::MOODS.frozen?).to be true
+    it 'generates scope methods for each mood' do
+      create(:status_update, mood: :focused)
+      expect(StatusUpdate.focused.count).to be > 0
+    end
+
+    it 'cannot be set to an invalid value' do
+      expect {
+        build(:status_update, mood: 'invalid')
+      }.to raise_error(ArgumentError)
     end
   end
 end

@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :status_update do
     body { Faker::Lorem.sentence }
-    mood { StatusUpdate::MOODS.sample }
+    mood { StatusUpdate.moods.keys.sample }
     likes_count { 0 }
   end
 
@@ -19,7 +19,7 @@ FactoryBot.define do
   factory :status_change do
     association :status_update
     from_status { nil }
-    to_status { StatusUpdate::STATUSES.sample }
+    to_status { 'approved' }
     reason { nil }
   end
 end

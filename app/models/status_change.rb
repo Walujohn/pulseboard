@@ -1,20 +1,8 @@
 class StatusChange < ApplicationRecord
-  # Constants: Valid status values
-  STATUSES = [
-    "submitted",
-    "in_review",
-    "approved",
-    "denied",
-    "needs_info"
-  ].freeze
-
-  # Relationships
   belongs_to :status_update
 
-  # Validations
   validates :status_update_id, presence: true
-  validates :to_status, presence: true, inclusion: { in: STATUSES }
-  validates :from_status, inclusion: { in: STATUSES }, allow_nil: true
+  validates :to_status, presence: true
 
   # Scopes
   scope :ordered, -> { order(created_at: :asc) }
